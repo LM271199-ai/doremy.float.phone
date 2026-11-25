@@ -577,7 +577,6 @@ Deno.serve(async (req: Request) => {
    * 用户看到的就是「根本没关上」。
    * 查不到（网络抖动等）按「未被撤销」处理，宁可多发一次也不误杀正常消息。
    */
-  let isLifeSceneJob = false;
   const isCancelled = async (): Promise<boolean> => {
     const response = await rest(
       `push_jobs?id=eq.${encodeURIComponent(job.id)}&select=status&limit=1`,
