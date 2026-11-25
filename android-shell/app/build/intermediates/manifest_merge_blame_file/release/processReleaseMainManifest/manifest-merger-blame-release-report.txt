@@ -1,0 +1,616 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="app.floatphone.shell"
+4    android:versionCode="11"
+5    android:versionName="1.0.12" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/workspace/android-shell/app/src/main/AndroidManifest.xml:5:5-67
+11-->/workspace/android-shell/app/src/main/AndroidManifest.xml:5:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->/workspace/android-shell/app/src/main/AndroidManifest.xml:6:5-79
+12-->/workspace/android-shell/app/src/main/AndroidManifest.xml:6:22-76
+13    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+13-->/workspace/android-shell/app/src/main/AndroidManifest.xml:7:5-77
+13-->/workspace/android-shell/app/src/main/AndroidManifest.xml:7:22-74
+14    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+14-->/workspace/android-shell/app/src/main/AndroidManifest.xml:8:5-77
+14-->/workspace/android-shell/app/src/main/AndroidManifest.xml:8:22-74
+15    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+15-->/workspace/android-shell/app/src/main/AndroidManifest.xml:9:5-87
+15-->/workspace/android-shell/app/src/main/AndroidManifest.xml:9:22-84
+16    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+16-->/workspace/android-shell/app/src/main/AndroidManifest.xml:10:5-81
+16-->/workspace/android-shell/app/src/main/AndroidManifest.xml:10:22-78
+17    <!-- 通话浮窗：浮在其他 App 上层（Android 6+ 需用户在系统设置里手动授予） -->
+18    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+18-->/workspace/android-shell/app/src/main/AndroidManifest.xml:12:5-78
+18-->/workspace/android-shell/app/src/main/AndroidManifest.xml:12:22-75
+19    <uses-permission android:name="android.permission.VIBRATE" />
+19-->/workspace/android-shell/app/src/main/AndroidManifest.xml:13:5-66
+19-->/workspace/android-shell/app/src/main/AndroidManifest.xml:13:22-63
+20    <!--
+21         通话浮窗前台服务：承载 TYPE_APPLICATION_OVERLAY，顺带把进程钉住，
+22         网页的语音播放与自动搭话在切到别的 App 后才不会被掐
+23    -->
+24    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+24-->/workspace/android-shell/app/src/main/AndroidManifest.xml:16:5-92
+24-->/workspace/android-shell/app/src/main/AndroidManifest.xml:16:22-89
+25    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+25-->/workspace/android-shell/app/src/main/AndroidManifest.xml:17:5-81
+25-->/workspace/android-shell/app/src/main/AndroidManifest.xml:17:22-78
+26    <!-- 通话按住说话/语音条录音、视频通话摄像头（WebView getUserMedia 需要壳侧转授） -->
+27    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+27-->/workspace/android-shell/app/src/main/AndroidManifest.xml:19:5-71
+27-->/workspace/android-shell/app/src/main/AndroidManifest.xml:19:22-68
+28    <uses-permission android:name="android.permission.CAMERA" />
+28-->/workspace/android-shell/app/src/main/AndroidManifest.xml:20:5-65
+28-->/workspace/android-shell/app/src/main/AndroidManifest.xml:20:22-62
+29    <!-- 导出文件写公共「下载」目录：Android 10+ 走 MediaStore 免权限，仅 8/9 需要 -->
+30    <uses-permission
+30-->/workspace/android-shell/app/src/main/AndroidManifest.xml:22:5-23:38
+31        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+31-->/workspace/android-shell/app/src/main/AndroidManifest.xml:22:22-78
+32        android:maxSdkVersion="28" />
+32-->/workspace/android-shell/app/src/main/AndroidManifest.xml:23:9-35
+33
+34    <uses-feature
+34-->/workspace/android-shell/app/src/main/AndroidManifest.xml:24:5-85
+35        android:name="android.hardware.camera"
+35-->/workspace/android-shell/app/src/main/AndroidManifest.xml:24:19-57
+36        android:required="false" />
+36-->/workspace/android-shell/app/src/main/AndroidManifest.xml:24:58-82
+37    <uses-feature
+37-->/workspace/android-shell/app/src/main/AndroidManifest.xml:25:5-89
+38        android:name="android.hardware.microphone"
+38-->/workspace/android-shell/app/src/main/AndroidManifest.xml:25:19-61
+39        android:required="false" />
+39-->/workspace/android-shell/app/src/main/AndroidManifest.xml:25:62-86
+40
+41    <!--
+42         Health Connect：Android 13 及以下要单独装那个 App，这里声明它是为了
+43         在没装时能正确地「探测不到」而不是崩掉。Android 14+ 它已并入系统。
+44    -->
+45    <queries>
+45-->/workspace/android-shell/app/src/main/AndroidManifest.xml:29:5-40:15
+46        <package android:name="com.google.android.apps.healthdata" />
+46-->/workspace/android-shell/app/src/main/AndroidManifest.xml:30:9-70
+46-->/workspace/android-shell/app/src/main/AndroidManifest.xml:30:18-67
+47        <!--
+48             闹钟与倒计时：Android 11+ 有包可见性限制，不在 queries 里声明这两个
+49             意图，就「看不到」系统时钟 App，startActivity 会抛
+50             ActivityNotFoundException，被误报成「这台设备没有可用的时钟应用」。
+51        -->
+52        <intent>
+52-->/workspace/android-shell/app/src/main/AndroidManifest.xml:34:9-36:18
+53            <action android:name="android.intent.action.SET_ALARM" />
+53-->/workspace/android-shell/app/src/main/AndroidManifest.xml:35:13-70
+53-->/workspace/android-shell/app/src/main/AndroidManifest.xml:35:21-67
+54        </intent>
+55        <intent>
+55-->/workspace/android-shell/app/src/main/AndroidManifest.xml:37:9-39:18
+56            <action android:name="android.intent.action.SET_TIMER" />
+56-->/workspace/android-shell/app/src/main/AndroidManifest.xml:38:13-70
+56-->/workspace/android-shell/app/src/main/AndroidManifest.xml:38:21-67
+57        </intent>
+58    </queries>
+59
+60    <!--
+61         ══════ 深度陪伴扩展权限（仅本机自用，一次性开到位）══════
+62         说明：下面这些是「声明」。带 * 的属于危险权限，系统仍会弹窗由用户确认；
+63         声明只是让 App 有资格去申请。真正的授权入口见设置页的「权限中心」。
+64    -->
+65
+66
+67    <!-- 感知类：让角色知道我在用什么、在哪儿、什么状态 -->
+68    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+68-->/workspace/android-shell/app/src/main/AndroidManifest.xml:48:5-77
+68-->/workspace/android-shell/app/src/main/AndroidManifest.xml:48:22-74
+69    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+69-->/workspace/android-shell/app/src/main/AndroidManifest.xml:49:5-114
+69-->/workspace/android-shell/app/src/main/AndroidManifest.xml:49:22-75
+70    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+70-->/workspace/android-shell/app/src/main/AndroidManifest.xml:50:5-79
+70-->/workspace/android-shell/app/src/main/AndroidManifest.xml:50:22-76
+71    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+71-->/workspace/android-shell/app/src/main/AndroidManifest.xml:51:5-81
+71-->/workspace/android-shell/app/src/main/AndroidManifest.xml:51:22-78
+72    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+72-->/workspace/android-shell/app/src/main/AndroidManifest.xml:52:5-85
+72-->/workspace/android-shell/app/src/main/AndroidManifest.xml:52:22-82
+73    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+73-->/workspace/android-shell/app/src/main/AndroidManifest.xml:53:5-79
+73-->/workspace/android-shell/app/src/main/AndroidManifest.xml:53:22-76
+74    <uses-permission android:name="android.permission.BODY_SENSORS" />
+74-->/workspace/android-shell/app/src/main/AndroidManifest.xml:54:5-71
+74-->/workspace/android-shell/app/src/main/AndroidManifest.xml:54:22-68
+75
+76    <!--
+77         健康数据（睡眠）：经 Health Connect 读，不是直接读厂商运动 App。
+78         这是 Health Connect 自己的权限（Android 14+ 由系统管），请求时由
+79         系统弹出授权，用户拒绝也不影响 App 其余部分。
+80    -->
+81    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+81-->/workspace/android-shell/app/src/main/AndroidManifest.xml:59:5-76
+81-->/workspace/android-shell/app/src/main/AndroidManifest.xml:59:22-73
+82
+83    <!-- 日程与通讯录：角色记你的安排、认你的朋友 -->
+84    <uses-permission android:name="android.permission.READ_CALENDAR" />
+84-->/workspace/android-shell/app/src/main/AndroidManifest.xml:62:5-72
+84-->/workspace/android-shell/app/src/main/AndroidManifest.xml:62:22-69
+85    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+85-->/workspace/android-shell/app/src/main/AndroidManifest.xml:63:5-73
+85-->/workspace/android-shell/app/src/main/AndroidManifest.xml:63:22-70
+86    <uses-permission android:name="android.permission.READ_CONTACTS" />
+86-->/workspace/android-shell/app/src/main/AndroidManifest.xml:64:5-72
+86-->/workspace/android-shell/app/src/main/AndroidManifest.xml:64:22-69
+87
+88    <!-- 媒体：读相册/音乐，为后续「角色看照片、一起听歌」留口子 -->
+89    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+89-->/workspace/android-shell/app/src/main/AndroidManifest.xml:67:5-76
+89-->/workspace/android-shell/app/src/main/AndroidManifest.xml:67:22-73
+90    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+90-->/workspace/android-shell/app/src/main/AndroidManifest.xml:68:5-75
+90-->/workspace/android-shell/app/src/main/AndroidManifest.xml:68:22-72
+91    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+91-->/workspace/android-shell/app/src/main/AndroidManifest.xml:69:5-75
+91-->/workspace/android-shell/app/src/main/AndroidManifest.xml:69:22-72
+92    <uses-permission
+92-->/workspace/android-shell/app/src/main/AndroidManifest.xml:70:5-71:38
+93        android:name="android.permission.READ_EXTERNAL_STORAGE"
+93-->/workspace/android-shell/app/src/main/AndroidManifest.xml:70:22-77
+94        android:maxSdkVersion="32" />
+94-->/workspace/android-shell/app/src/main/AndroidManifest.xml:71:9-35
+95
+96    <!-- 电话与短信：来电识别、通话状态感知 -->
+97    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+97-->/workspace/android-shell/app/src/main/AndroidManifest.xml:74:5-75
+97-->/workspace/android-shell/app/src/main/AndroidManifest.xml:74:22-72
+98    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+98-->/workspace/android-shell/app/src/main/AndroidManifest.xml:75:5-72
+98-->/workspace/android-shell/app/src/main/AndroidManifest.xml:75:22-69
+99    <uses-permission android:name="android.permission.READ_SMS" />
+99-->/workspace/android-shell/app/src/main/AndroidManifest.xml:76:5-67
+99-->/workspace/android-shell/app/src/main/AndroidManifest.xml:76:22-64
+100    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+100-->/workspace/android-shell/app/src/main/AndroidManifest.xml:77:5-70
+100-->/workspace/android-shell/app/src/main/AndroidManifest.xml:77:22-67
+101
+102    <!-- 系统能力：常驻、精确闹钟、设置项、状态栏 -->
+103    <!--
+104         设闹钟的**调用方权限**。系统时钟（AOSP 的 HandleSetAlarm、
+105         荣耀 com.hihonor.deskclock 等）给响应 SET_ALARM 的入口声明了
+106         android:permission="com.android.alarm.permission.SET_ALARM"。
+107         它是 normal 级权限：声明即自动授予，不需要用户手动开，但**不声明就没有**，
+108         startActivity 会抛：
+109           SecurityException: Permission Denial: starting Intent { act=android.intent.action.SET_ALARM
+110             ... requires com.android.alarm.permission.SET_ALARM
+111         （实测反馈，荣耀机型）。另外缺这个权限时 queryIntentActivities 也可能把
+112         时钟过滤掉，让 canHandleAlarmIntent 误报「本机不支持」。
+113         注意与下面的 SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM 区分：那两个是
+114         「本 App 自己定精确闹钟」用的，这个才是时钟 App 要求调用方持有的。
+115    -->
+116    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+116-->/workspace/android-shell/app/src/main/AndroidManifest.xml:91:5-78
+116-->/workspace/android-shell/app/src/main/AndroidManifest.xml:91:22-75
+117    <uses-permission android:name="android.permission.WAKE_LOCK" />
+117-->/workspace/android-shell/app/src/main/AndroidManifest.xml:92:5-68
+117-->/workspace/android-shell/app/src/main/AndroidManifest.xml:92:22-65
+118    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+118-->/workspace/android-shell/app/src/main/AndroidManifest.xml:93:5-95
+118-->/workspace/android-shell/app/src/main/AndroidManifest.xml:93:22-92
+119    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+119-->/workspace/android-shell/app/src/main/AndroidManifest.xml:94:5-74
+119-->/workspace/android-shell/app/src/main/AndroidManifest.xml:94:22-71
+120    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+120-->/workspace/android-shell/app/src/main/AndroidManifest.xml:95:5-79
+120-->/workspace/android-shell/app/src/main/AndroidManifest.xml:95:22-76
+121    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+121-->/workspace/android-shell/app/src/main/AndroidManifest.xml:96:5-73
+121-->/workspace/android-shell/app/src/main/AndroidManifest.xml:96:22-70
+122    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+122-->/workspace/android-shell/app/src/main/AndroidManifest.xml:97:5-76
+122-->/workspace/android-shell/app/src/main/AndroidManifest.xml:97:22-73
+123    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+123-->/workspace/android-shell/app/src/main/AndroidManifest.xml:98:5-85
+123-->/workspace/android-shell/app/src/main/AndroidManifest.xml:98:22-82
+124
+125    <!-- 蓝牙与传感：耳机状态、贴贴等联动 -->
+126    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+126-->/workspace/android-shell/app/src/main/AndroidManifest.xml:101:5-76
+126-->/workspace/android-shell/app/src/main/AndroidManifest.xml:101:22-73
+127    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+127-->/workspace/android-shell/app/src/main/AndroidManifest.xml:102:5-73
+127-->/workspace/android-shell/app/src/main/AndroidManifest.xml:102:22-70
+128    <uses-permission android:name="android.permission.NFC" />
+128-->/workspace/android-shell/app/src/main/AndroidManifest.xml:103:5-62
+128-->/workspace/android-shell/app/src/main/AndroidManifest.xml:103:22-59
+129
+130    <!-- 前台服务扩展类型（Android 14+ 要求逐项声明） -->
+131    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+131-->/workspace/android-shell/app/src/main/AndroidManifest.xml:106:5-88
+131-->/workspace/android-shell/app/src/main/AndroidManifest.xml:106:22-85
+132    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+132-->/workspace/android-shell/app/src/main/AndroidManifest.xml:107:5-84
+132-->/workspace/android-shell/app/src/main/AndroidManifest.xml:107:22-81
+133    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+133-->/workspace/android-shell/app/src/main/AndroidManifest.xml:108:5-86
+133-->/workspace/android-shell/app/src/main/AndroidManifest.xml:108:22-83
+134    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+134-->/workspace/android-shell/app/src/main/AndroidManifest.xml:109:5-89
+134-->/workspace/android-shell/app/src/main/AndroidManifest.xml:109:22-86
+135
+136    <permission
+136-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.11.1/transforms/e80290742cec99009afd6fa1ac0beb80/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+137        android:name="app.floatphone.shell.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+137-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.11.1/transforms/e80290742cec99009afd6fa1ac0beb80/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+138        android:protectionLevel="signature" />
+138-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.11.1/transforms/e80290742cec99009afd6fa1ac0beb80/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+139
+140    <uses-permission android:name="app.floatphone.shell.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+140-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.11.1/transforms/e80290742cec99009afd6fa1ac0beb80/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+140-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.11.1/transforms/e80290742cec99009afd6fa1ac0beb80/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+141
+142    <application
+142-->/workspace/android-shell/app/src/main/AndroidManifest.xml:111:5-257:19
+143        android:allowBackup="true"
+143-->/workspace/android-shell/app/src/main/AndroidManifest.xml:114:9-35
+144        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+144-->[androidx.core:core:1.13.1] /root/.gradle/caches/8.11.1/transforms/e80290742cec99009afd6fa1ac0beb80/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+145        android:extractNativeLibs="false"
+146        android:icon="@drawable/appicon"
+146-->/workspace/android-shell/app/src/main/AndroidManifest.xml:113:9-41
+147        android:label="@string/app_name"
+147-->/workspace/android-shell/app/src/main/AndroidManifest.xml:112:9-41
+148        android:supportsRtl="true"
+148-->/workspace/android-shell/app/src/main/AndroidManifest.xml:115:9-35
+149        android:theme="@style/Theme.FloatShell"
+149-->/workspace/android-shell/app/src/main/AndroidManifest.xml:117:9-48
+150        android:usesCleartextTraffic="false" >
+150-->/workspace/android-shell/app/src/main/AndroidManifest.xml:116:9-45
+151        <activity
+151-->/workspace/android-shell/app/src/main/AndroidManifest.xml:119:9-144:20
+152            android:name="app.floatphone.shell.MainActivity"
+152-->/workspace/android-shell/app/src/main/AndroidManifest.xml:120:13-41
+153            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+153-->/workspace/android-shell/app/src/main/AndroidManifest.xml:123:13-113
+154            android:exported="true"
+154-->/workspace/android-shell/app/src/main/AndroidManifest.xml:121:13-36
+155            android:launchMode="singleTask"
+155-->/workspace/android-shell/app/src/main/AndroidManifest.xml:122:13-44
+156            android:windowSoftInputMode="adjustResize" >
+156-->/workspace/android-shell/app/src/main/AndroidManifest.xml:124:13-55
+157            <intent-filter>
+157-->/workspace/android-shell/app/src/main/AndroidManifest.xml:125:13-128:29
+158                <action android:name="android.intent.action.MAIN" />
+158-->/workspace/android-shell/app/src/main/AndroidManifest.xml:126:17-69
+158-->/workspace/android-shell/app/src/main/AndroidManifest.xml:126:25-66
+159
+160                <category android:name="android.intent.category.LAUNCHER" />
+160-->/workspace/android-shell/app/src/main/AndroidManifest.xml:127:17-77
+160-->/workspace/android-shell/app/src/main/AndroidManifest.xml:127:27-74
+161            </intent-filter>
+162            <!--
+163                 Health Connect 的权限说明页入口。Android 14+ 会在这里链一个
+164                 「为什么需要这些权限」的说明，缺了它系统会拒绝授权请求。
+165            -->
+166            <intent-filter>
+166-->/workspace/android-shell/app/src/main/AndroidManifest.xml:131:13-134:29
+167                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+167-->/workspace/android-shell/app/src/main/AndroidManifest.xml:132:17-86
+167-->/workspace/android-shell/app/src/main/AndroidManifest.xml:132:25-83
+168
+169                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+169-->/workspace/android-shell/app/src/main/AndroidManifest.xml:133:17-87
+169-->/workspace/android-shell/app/src/main/AndroidManifest.xml:133:27-84
+170            </intent-filter>
+171
+172            <!--
+173                 深链：外部 App（如桌宠）用 floatshell://open?url=<站内地址> 唤起本壳并直达指定页面。
+174                 目标地址仍受 SITE_URL 前缀校验，只能开自己的站点。
+175            -->
+176            <intent-filter>
+176-->/workspace/android-shell/app/src/main/AndroidManifest.xml:138:13-143:29
+177                <action android:name="android.intent.action.VIEW" />
+177-->/workspace/android-shell/app/src/main/AndroidManifest.xml:139:17-69
+177-->/workspace/android-shell/app/src/main/AndroidManifest.xml:139:25-66
+178
+179                <category android:name="android.intent.category.DEFAULT" />
+179-->/workspace/android-shell/app/src/main/AndroidManifest.xml:140:17-76
+179-->/workspace/android-shell/app/src/main/AndroidManifest.xml:140:27-73
+180                <category android:name="android.intent.category.BROWSABLE" />
+180-->/workspace/android-shell/app/src/main/AndroidManifest.xml:141:17-78
+180-->/workspace/android-shell/app/src/main/AndroidManifest.xml:141:27-75
+181
+182                <data android:scheme="floatshell" />
+182-->/workspace/android-shell/app/src/main/AndroidManifest.xml:142:17-53
+182-->/workspace/android-shell/app/src/main/AndroidManifest.xml:142:23-50
+183            </intent-filter>
+184        </activity>
+185        <activity
+185-->/workspace/android-shell/app/src/main/AndroidManifest.xml:146:9-153:55
+186            android:name="app.floatphone.shell.IncomingCallActivity"
+186-->/workspace/android-shell/app/src/main/AndroidManifest.xml:147:13-49
+187            android:excludeFromRecents="true"
+187-->/workspace/android-shell/app/src/main/AndroidManifest.xml:149:13-46
+188            android:exported="false"
+188-->/workspace/android-shell/app/src/main/AndroidManifest.xml:148:13-37
+189            android:launchMode="singleInstance"
+189-->/workspace/android-shell/app/src/main/AndroidManifest.xml:150:13-48
+190            android:showWhenLocked="true"
+190-->/workspace/android-shell/app/src/main/AndroidManifest.xml:151:13-42
+191            android:theme="@style/Theme.FloatShell"
+191-->/workspace/android-shell/app/src/main/AndroidManifest.xml:153:13-52
+192            android:turnScreenOn="true" />
+192-->/workspace/android-shell/app/src/main/AndroidManifest.xml:152:13-40
+193
+194        <receiver
+194-->/workspace/android-shell/app/src/main/AndroidManifest.xml:155:9-157:40
+195            android:name="app.floatphone.shell.CallActionReceiver"
+195-->/workspace/android-shell/app/src/main/AndroidManifest.xml:156:13-47
+196            android:exported="false" />
+196-->/workspace/android-shell/app/src/main/AndroidManifest.xml:157:13-37
+197
+198        <service
+198-->/workspace/android-shell/app/src/main/AndroidManifest.xml:159:9-162:56
+199            android:name="app.floatphone.shell.PushService"
+199-->/workspace/android-shell/app/src/main/AndroidManifest.xml:160:13-40
+200            android:exported="false"
+200-->/workspace/android-shell/app/src/main/AndroidManifest.xml:161:13-37
+201            android:foregroundServiceType="dataSync" />
+201-->/workspace/android-shell/app/src/main/AndroidManifest.xml:162:13-53
+202
+203        <receiver
+203-->/workspace/android-shell/app/src/main/AndroidManifest.xml:164:9-170:20
+204            android:name="app.floatphone.shell.BootReceiver"
+204-->/workspace/android-shell/app/src/main/AndroidManifest.xml:165:13-41
+205            android:exported="true" >
+205-->/workspace/android-shell/app/src/main/AndroidManifest.xml:166:13-36
+206            <intent-filter>
+206-->/workspace/android-shell/app/src/main/AndroidManifest.xml:167:13-169:29
+207                <action android:name="android.intent.action.BOOT_COMPLETED" />
+207-->/workspace/android-shell/app/src/main/AndroidManifest.xml:168:17-79
+207-->/workspace/android-shell/app/src/main/AndroidManifest.xml:168:25-76
+208            </intent-filter>
+209        </receiver>
+210
+211        <!-- 查岗提醒闹钟：只发提醒通知，不在后台截屏；用户点开后才进入预览审批。 -->
+212        <receiver
+212-->/workspace/android-shell/app/src/main/AndroidManifest.xml:173:9-175:40
+213            android:name="app.floatphone.shell.CheckInAlarmReceiver"
+213-->/workspace/android-shell/app/src/main/AndroidManifest.xml:174:13-49
+214            android:exported="false" />
+214-->/workspace/android-shell/app/src/main/AndroidManifest.xml:175:13-37
+215        <receiver
+215-->/workspace/android-shell/app/src/main/AndroidManifest.xml:177:9-179:40
+216            android:name="app.floatphone.shell.CheckInAccessibilitySettingsReceiver"
+216-->/workspace/android-shell/app/src/main/AndroidManifest.xml:178:13-65
+217            android:exported="false" />
+217-->/workspace/android-shell/app/src/main/AndroidManifest.xml:179:13-37
+218
+219        <!--
+220             通话浮窗服务：TYPE_APPLICATION_OVERLAY 浮在其他 App 上层。
+221             mediaPlayback 类型同时把进程钉在前台，网页语音才不会被系统掐断。
+222        -->
+223        <service
+223-->/workspace/android-shell/app/src/main/AndroidManifest.xml:183:9-186:61
+224            android:name="app.floatphone.shell.CallOverlayService"
+224-->/workspace/android-shell/app/src/main/AndroidManifest.xml:184:13-47
+225            android:exported="false"
+225-->/workspace/android-shell/app/src/main/AndroidManifest.xml:185:13-37
+226            android:foregroundServiceType="mediaPlayback" />
+226-->/workspace/android-shell/app/src/main/AndroidManifest.xml:186:13-58
+227
+228        <!--
+229             查岗预览浮层：角色想看你时截屏先弹窗给你过目，你同意才发给它。
+230             用 specialUse：它不做媒体播放，只是可被用户看见的一次性确认浮层。
+231        -->
+232        <service
+232-->/workspace/android-shell/app/src/main/AndroidManifest.xml:190:9-197:19
+233            android:name="app.floatphone.shell.CheckInService"
+233-->/workspace/android-shell/app/src/main/AndroidManifest.xml:191:13-43
+234            android:exported="false"
+234-->/workspace/android-shell/app/src/main/AndroidManifest.xml:192:13-37
+235            android:foregroundServiceType="specialUse" >
+235-->/workspace/android-shell/app/src/main/AndroidManifest.xml:193:13-55
+236            <property
+236-->/workspace/android-shell/app/src/main/AndroidManifest.xml:194:13-196:56
+237                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+237-->/workspace/android-shell/app/src/main/AndroidManifest.xml:195:17-76
+238                android:value="用户发起或明确同意的单次屏幕预览确认浮层" />
+238-->/workspace/android-shell/app/src/main/AndroidManifest.xml:196:17-53
+239        </service>
+240
+241        <!--
+242             截屏悬浮球：随手点一下就能截屏发给角色（你自己发起，不是角色查岗）。
+243             点击后交给 CheckInService 走同一套预览与审批。
+244        -->
+245        <service
+245-->/workspace/android-shell/app/src/main/AndroidManifest.xml:201:9-208:19
+246            android:name="app.floatphone.shell.ScreenshotBallService"
+246-->/workspace/android-shell/app/src/main/AndroidManifest.xml:202:13-50
+247            android:exported="false"
+247-->/workspace/android-shell/app/src/main/AndroidManifest.xml:203:13-37
+248            android:foregroundServiceType="specialUse" >
+248-->/workspace/android-shell/app/src/main/AndroidManifest.xml:204:13-55
+249            <property
+249-->/workspace/android-shell/app/src/main/AndroidManifest.xml:194:13-196:56
+250                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+250-->/workspace/android-shell/app/src/main/AndroidManifest.xml:195:17-76
+251                android:value="用户主动开启的屏幕截取悬浮球" />
+251-->/workspace/android-shell/app/src/main/AndroidManifest.xml:196:17-53
+252        </service>
+253
+254        <!--
+255             媒体控制：持有「通知使用权」后才有资格读活跃媒体会话、直接控制播放。
+256             它**不读任何通知内容**（onNotificationPosted 刻意不重写），存在的唯一
+257             目的是让 MediaSessionManager 认这个调用方。
+258        -->
+259        <service
+259-->/workspace/android-shell/app/src/main/AndroidManifest.xml:213:9-220:19
+260            android:name="app.floatphone.shell.MediaControlListenerService"
+260-->/workspace/android-shell/app/src/main/AndroidManifest.xml:214:13-56
+261            android:exported="false"
+261-->/workspace/android-shell/app/src/main/AndroidManifest.xml:215:13-37
+262            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
+262-->/workspace/android-shell/app/src/main/AndroidManifest.xml:216:13-87
+263            <intent-filter>
+263-->/workspace/android-shell/app/src/main/AndroidManifest.xml:217:13-219:29
+264                <action android:name="android.service.notification.NotificationListenerService" />
+264-->/workspace/android-shell/app/src/main/AndroidManifest.xml:218:17-99
+264-->/workspace/android-shell/app/src/main/AndroidManifest.xml:218:25-96
+265            </intent-filter>
+266        </service>
+267
+268        <!-- 桌面小组件：角色留在桌面上的话。内容是网页渲染的图片（见 PhoneWidgetProvider）。 -->
+269        <receiver
+269-->/workspace/android-shell/app/src/main/AndroidManifest.xml:223:9-232:20
+270            android:name="app.floatphone.shell.PhoneWidgetProvider"
+270-->/workspace/android-shell/app/src/main/AndroidManifest.xml:224:13-48
+271            android:exported="true" >
+271-->/workspace/android-shell/app/src/main/AndroidManifest.xml:225:13-36
+272            <intent-filter>
+272-->/workspace/android-shell/app/src/main/AndroidManifest.xml:226:13-228:29
+273                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+273-->/workspace/android-shell/app/src/main/AndroidManifest.xml:227:17-84
+273-->/workspace/android-shell/app/src/main/AndroidManifest.xml:227:25-81
+274            </intent-filter>
+275
+276            <meta-data
+276-->/workspace/android-shell/app/src/main/AndroidManifest.xml:229:13-231:61
+277                android:name="android.appwidget.provider"
+277-->/workspace/android-shell/app/src/main/AndroidManifest.xml:230:17-58
+278                android:resource="@xml/phone_widget_info" />
+278-->/workspace/android-shell/app/src/main/AndroidManifest.xml:231:17-58
+279        </receiver>
+280
+281        <!-- 浮窗通知上的动作按钮（挂断/返回） -->
+282        <receiver
+282-->/workspace/android-shell/app/src/main/AndroidManifest.xml:235:9-237:40
+283            android:name="app.floatphone.shell.OverlayActionReceiver"
+283-->/workspace/android-shell/app/src/main/AndroidManifest.xml:236:13-50
+284            android:exported="false" />
+284-->/workspace/android-shell/app/src/main/AndroidManifest.xml:237:13-37
+285
+286        <!--
+287             通知栏「直接回复」：用户在消息通知横幅上就地回的话先落到这里，
+288             再转交网页的聊天引擎
+289        -->
+290        <receiver
+290-->/workspace/android-shell/app/src/main/AndroidManifest.xml:241:9-243:40
+291            android:name="app.floatphone.shell.NotificationReplyReceiver"
+291-->/workspace/android-shell/app/src/main/AndroidManifest.xml:242:13-54
+292            android:exported="false" />
+292-->/workspace/android-shell/app/src/main/AndroidManifest.xml:243:13-37
+293
+294        <!-- 通话控制无障碍服务：浮窗保活 + 前台 App 感知（需用户在系统设置里手动开启） -->
+295        <service
+295-->/workspace/android-shell/app/src/main/AndroidManifest.xml:246:9-256:19
+296            android:name="app.floatphone.shell.CallControlService"
+296-->/workspace/android-shell/app/src/main/AndroidManifest.xml:247:13-47
+297            android:exported="true"
+297-->/workspace/android-shell/app/src/main/AndroidManifest.xml:248:13-36
+298            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
+298-->/workspace/android-shell/app/src/main/AndroidManifest.xml:249:13-79
+299            <intent-filter>
+299-->/workspace/android-shell/app/src/main/AndroidManifest.xml:250:13-252:29
+300                <action android:name="android.accessibilityservice.AccessibilityService" />
+300-->/workspace/android-shell/app/src/main/AndroidManifest.xml:251:17-92
+300-->/workspace/android-shell/app/src/main/AndroidManifest.xml:251:25-89
+301            </intent-filter>
+302
+303            <meta-data
+303-->/workspace/android-shell/app/src/main/AndroidManifest.xml:253:13-255:64
+304                android:name="android.accessibilityservice"
+304-->/workspace/android-shell/app/src/main/AndroidManifest.xml:254:17-60
+305                android:resource="@xml/call_control_service" />
+305-->/workspace/android-shell/app/src/main/AndroidManifest.xml:255:17-61
+306        </service>
+307        <service
+307-->[androidx.health.connect:connect-client:1.1.0] /root/.gradle/caches/8.11.1/transforms/74efef062166a62a5188e81598945af0/transformed/connect-client-1.1.0/AndroidManifest.xml:24:9-32:19
+308            android:name="androidx.health.platform.client.impl.sdkservice.HealthDataSdkService"
+308-->[androidx.health.connect:connect-client:1.1.0] /root/.gradle/caches/8.11.1/transforms/74efef062166a62a5188e81598945af0/transformed/connect-client-1.1.0/AndroidManifest.xml:25:13-96
+309            android:enabled="true"
+309-->[androidx.health.connect:connect-client:1.1.0] /root/.gradle/caches/8.11.1/transforms/74efef062166a62a5188e81598945af0/transformed/connect-client-1.1.0/AndroidManifest.xml:26:13-35
+310            android:exported="true" >
+310-->[androidx.health.connect:connect-client:1.1.0] /root/.gradle/caches/8.11.1/transforms/74efef062166a62a5188e81598945af0/transformed/connect-client-1.1.0/AndroidManifest.xml:27:13-36
+311            <intent-filter>
+311-->[androidx.health.connect:connect-client:1.1.0] /root/.gradle/caches/8.11.1/transforms/74efef062166a62a5188e81598945af0/transformed/connect-client-1.1.0/AndroidManifest.xml:29:13-31:29
+312                <action android:name="androidx.health.platform.client.ACTION_BIND_SDK_SERVICE" />
+312-->[androidx.health.connect:connect-client:1.1.0] /root/.gradle/caches/8.11.1/transforms/74efef062166a62a5188e81598945af0/transformed/connect-client-1.1.0/AndroidManifest.xml:30:17-98
+312-->[androidx.health.connect:connect-client:1.1.0] /root/.gradle/caches/8.11.1/transforms/74efef062166a62a5188e81598945af0/transformed/connect-client-1.1.0/AndroidManifest.xml:30:25-95
+313            </intent-filter>
+314        </service>
+315
+316        <provider
+316-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.11.1/transforms/7f169973cee334b36d33168010632be1/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+317            android:name="androidx.startup.InitializationProvider"
+317-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.11.1/transforms/7f169973cee334b36d33168010632be1/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+318            android:authorities="app.floatphone.shell.androidx-startup"
+318-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.11.1/transforms/7f169973cee334b36d33168010632be1/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+319            android:exported="false" >
+319-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.11.1/transforms/7f169973cee334b36d33168010632be1/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+320            <meta-data
+320-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.11.1/transforms/7f169973cee334b36d33168010632be1/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+321                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+321-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.11.1/transforms/7f169973cee334b36d33168010632be1/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+322                android:value="androidx.startup" />
+322-->[androidx.emoji2:emoji2:1.3.0] /root/.gradle/caches/8.11.1/transforms/7f169973cee334b36d33168010632be1/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+323            <meta-data
+323-->[androidx.lifecycle:lifecycle-process:2.6.2] /root/.gradle/caches/8.11.1/transforms/fedad53514fedb4db3fe9a38acf76f17/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+324                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+324-->[androidx.lifecycle:lifecycle-process:2.6.2] /root/.gradle/caches/8.11.1/transforms/fedad53514fedb4db3fe9a38acf76f17/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+325                android:value="androidx.startup" />
+325-->[androidx.lifecycle:lifecycle-process:2.6.2] /root/.gradle/caches/8.11.1/transforms/fedad53514fedb4db3fe9a38acf76f17/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+326            <meta-data
+326-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+327                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+327-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+328                android:value="androidx.startup" />
+328-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+329        </provider>
+330
+331        <receiver
+331-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+332            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+332-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+333            android:directBootAware="false"
+333-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+334            android:enabled="true"
+334-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+335            android:exported="true"
+335-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+336            android:permission="android.permission.DUMP" >
+336-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+337            <intent-filter>
+337-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+338                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+338-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+338-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+339            </intent-filter>
+340            <intent-filter>
+340-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+341                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+341-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+341-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+342            </intent-filter>
+343            <intent-filter>
+343-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+344                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+344-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+344-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+345            </intent-filter>
+346            <intent-filter>
+346-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+347                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+347-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+347-->[androidx.profileinstaller:profileinstaller:1.3.1] /root/.gradle/caches/8.11.1/transforms/f782c1cb052eeb7eff34941261fc6d1c/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+348            </intent-filter>
+349        </receiver>
+350    </application>
+351
+352</manifest>
