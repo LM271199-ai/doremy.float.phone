@@ -313,22 +313,39 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                // 适屏：WebView 未命中站点的触屏媒体查询（(hover:none) and (pointer:coarse) 为 false），
-                // 站点会走「桌面版」布局（390px 假手机 + 外壳），在窄屏 WebView 里横向/纵向溢出、显得过大。
-                // 这里按实际内容尺寸整体缩放到刚好铺满视口，避免裁切与过大。
+                // 全屏（移动端）布局：WebView 未命中站点的触屏媒体查询，站点会走桌面版「假手机+外壳」。
+                // 这里把站点移动端那段 CSS 强制注入（去外壳、内容 100vw×100lvh 贴满），实现全屏观感。
+                // 末尾保留一个「溢出则等比缩小」的兜底，避免个别元素横向溢出被裁切。
                 view.evaluateJavascript(
                     """
                     (function(){
                       try{
                         var de=document.documentElement;
+                        var id='__shell_mobile_fullscreen';
+                        if(!document.getElementById(id)){
+                          var st=document.createElement('style'); st.id=id;
+                          st.textContent=`
+:root{--phone-screen-width:100vw !important;--phone-screen-height:100lvh !important;}
+html,body{overflow:hidden !important;width:100% !important;height:100lvh !important;background:var(--c-page-body-bg) !important;}
+.app-root{width:100vw !important;height:100lvh !important;padding:0 !important;display:flex !important;justify-content:flex-start !important;align-items:flex-start !important;overflow:hidden !important;background:var(--c-page-body-bg) !important;}
+.app-root.splash-root{width:100vw !important;height:100lvh !important;margin:0 !important;padding:0 !important;display:flex !important;align-items:flex-start !important;justify-content:flex-start !important;overflow:hidden !important;background:var(--c-page-body-bg) !important;}
+.phone-shell-wrap{--phone-case-padding:0px !important;--phone-case-border-size:0px !important;--phone-frame-size:0px !important;--phone-screen-radius:0px !important;--phone-frame-radius:0px !important;--phone-case-radius:0px !important;width:var(--phone-screen-width) !important;margin-inline:0 !important;margin-top:0 !important;gap:0 !important;transform:none !important;transform-origin:top left !important;}
+.splash-shell-wrap{width:var(--phone-screen-width) !important;transform:none !important;transform-origin:top left !important;}
+.phone-shell-wrap .phone-case,.splash-shell-wrap .phone-case{padding:0 !important;border:0 !important;background:transparent !important;box-shadow:none !important;width:var(--phone-screen-width) !important;}
+.phone-shell-wrap .phone-case::before,.phone-shell-wrap .phone-case::after,.splash-shell-wrap .phone-case::before,.splash-shell-wrap .phone-case::after{display:none !important;}
+.phone-shell-wrap .phone-frame,.splash-shell-wrap .phone-frame{padding:0 !important;background:transparent !important;box-shadow:none !important;width:var(--phone-screen-width) !important;}
+.phone-shell-wrap .phone-frame::before,.phone-shell-wrap .phone-frame::after,.splash-shell-wrap .phone-frame::before,.splash-shell-wrap .phone-frame::after{display:none !important;}
+.phone-shell{width:var(--phone-screen-width) !important;height:var(--phone-screen-height) !important;border-radius:0 !important;}
+`;
+                          (document.head||de).appendChild(st);
+                        }
                         function fit(){
                           try{
-                            de.style.zoom='';
                             var iw=window.innerWidth, ih=window.innerHeight;
                             var sw=Math.max(de.scrollWidth, document.body?document.body.scrollWidth:0);
                             var sh=Math.max(de.scrollHeight, document.body?document.body.scrollHeight:0);
                             var z=Math.min(1, iw/(sw||iw), ih/(sh||ih));
-                            if (z < 0.98 && z > 0.5) de.style.zoom=String(Math.floor(z*1000)/1000);
+                            if (z < 0.92) de.style.zoom=String(Math.floor(z*1000)/1000); else de.style.zoom='';
                           }catch(e){}
                         }
                         fit(); setTimeout(fit,700);
