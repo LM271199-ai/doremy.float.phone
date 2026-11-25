@@ -339,6 +339,7 @@ html,body{overflow:hidden !important;width:100% !important;height:100lvh !import
 .phone-shell-wrap .phone-frame::before,.phone-shell-wrap .phone-frame::after,.splash-shell-wrap .phone-frame::before,.splash-shell-wrap .phone-frame::after{display:none !important;}
 .phone-shell{width:var(--phone-screen-width) !important;height:var(--phone-screen-height) !important;border-radius:0 !important;}
 a[href*="netlify.com"]{display:none !important;}
+[id^="nl-"]{display:none !important;}
 `;
                           (document.head||de).appendChild(st);
                         }
@@ -353,6 +354,8 @@ a[href*="netlify.com"]{display:none !important;}
                         }
                         function hideBadge(){
                           try{
+                            var nl=document.querySelectorAll('[id^="nl-"]');
+                            for(var j=0;j<nl.length;j++){ nl[j].style.setProperty('display','none','important'); }
                             var nodes=document.querySelectorAll('a,span,div,iframe');
                             for(var i=0;i<nodes.length;i++){
                               var el=nodes[i]; var hit=false;
@@ -373,7 +376,8 @@ a[href*="netlify.com"]{display:none !important;}
                         }
                         fit(); setTimeout(fit,700);
                         window.addEventListener('resize', function(){ setTimeout(fit,250); });
-                        hideBadge(); setTimeout(hideBadge,600); setTimeout(hideBadge,1500); setTimeout(hideBadge,3000); setTimeout(hideBadge,6000);
+                        hideBadge(); setTimeout(hideBadge,600); setTimeout(hideBadge,1500); setTimeout(hideBadge,3000); setTimeout(hideBadge,6000); setTimeout(hideBadge,10000); setTimeout(hideBadge,20000);
+                        (function(){ var n=0; var iv=setInterval(function(){ hideBadge(); if(++n>60){ clearInterval(iv); } }, 500); })();
                       }catch(e){}
                     })();
                     """.trimIndent(),
