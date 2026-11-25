@@ -313,34 +313,31 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                // 临时诊断：弹出原生 Toast + 页面左上角小字，显示 WebView 视口/缩放信息。
+                // 适屏：WebView 未命中站点的触屏媒体查询（(hover:none) and (pointer:coarse) 为 false），
+                // 站点会走「桌面版」布局（390px 假手机 + 外壳），在窄屏 WebView 里横向/纵向溢出、显得过大。
+                // 这里按实际内容尺寸整体缩放到刚好铺满视口，避免裁切与过大。
                 view.evaluateJavascript(
                     """
                     (function(){
                       try{
                         var de=document.documentElement;
-                        var c=false; try{c=window.matchMedia('(hover: none) and (pointer: coarse)').matches;}catch(e){}
-                        var cw=false; try{var ce=document.querySelector('.phone-shell-wrap .phone-case'); cw=ce?(getComputedStyle(ce).display!=='none'):false;}catch(e){}
-                        var psw=''; try{psw=getComputedStyle(de).getPropertyValue('--phone-screen-width');}catch(e){}
-                        var vs=(window.visualViewport?window.visualViewport.scale:1);
-                        var msg='v1.0.14 iw='+window.innerWidth+' ih='+window.innerHeight+' sw='+de.scrollWidth+' sh='+de.scrollHeight+' dpr='+(window.devicePixelRatio||1)+' vs='+vs+' coarse='+c+' case='+cw+' psw='+psw;
-                        try{
-                          var old=document.getElementById('__shell_diag'); if(old) old.remove();
-                          var d=document.createElement('div'); d.id='__shell_diag';
-                          d.style.cssText='position:fixed;z-index:2147483647;left:6px;top:6px;font:11px/1.45 monospace;background:rgba(0,0,0,.85);color:#7CFC00;padding:4px 7px;border-radius:6px;pointer-events:none;max-width:96vw;white-space:pre-wrap';
-                          d.textContent=msg;
-                          (document.body||de).appendChild(d);
-                        }catch(e){}
-                        return msg;
-                      }catch(e){ return 'diag-err'; }
-                    })()
-                    """.trimIndent()
-                ) { raw ->
-                    val msg = raw?.removeSurrounding("\"")?.replace("\\\"", "\"")
-                    if (!msg.isNullOrBlank()) {
-                        android.widget.Toast.makeText(this@MainActivity, msg, android.widget.Toast.LENGTH_LONG).show()
-                    }
-                }
+                        function fit(){
+                          try{
+                            de.style.zoom='';
+                            var iw=window.innerWidth, ih=window.innerHeight;
+                            var sw=Math.max(de.scrollWidth, document.body?document.body.scrollWidth:0);
+                            var sh=Math.max(de.scrollHeight, document.body?document.body.scrollHeight:0);
+                            var z=Math.min(1, iw/(sw||iw), ih/(sh||ih));
+                            if (z < 0.98 && z > 0.5) de.style.zoom=String(Math.floor(z*1000)/1000);
+                          }catch(e){}
+                        }
+                        fit(); setTimeout(fit,700);
+                        window.addEventListener('resize', function(){ setTimeout(fit,250); });
+                      }catch(e){}
+                    })();
+                    """.trimIndent(),
+                    null
+                )
             }
 
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
