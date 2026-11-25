@@ -313,28 +313,34 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                // 临时诊断条：显示 WebView 的视口/缩放信息，用于定位「整体偏大」。
-                // 定位完成后会移除。
+                // 临时诊断：弹出原生 Toast + 页面左上角小字，显示 WebView 视口/缩放信息。
                 view.evaluateJavascript(
                     """
                     (function(){
-                      function paint(){
+                      try{
+                        var de=document.documentElement;
+                        var c=false; try{c=window.matchMedia('(hover: none) and (pointer: coarse)').matches;}catch(e){}
+                        var cw=false; try{var ce=document.querySelector('.phone-shell-wrap .phone-case'); cw=ce?(getComputedStyle(ce).display!=='none'):false;}catch(e){}
+                        var psw=''; try{psw=getComputedStyle(de).getPropertyValue('--phone-screen-width');}catch(e){}
+                        var vs=(window.visualViewport?window.visualViewport.scale:1);
+                        var msg='v1.0.14 iw='+window.innerWidth+' ih='+window.innerHeight+' sw='+de.scrollWidth+' sh='+de.scrollHeight+' dpr='+(window.devicePixelRatio||1)+' vs='+vs+' coarse='+c+' case='+cw+' psw='+psw;
                         try{
                           var old=document.getElementById('__shell_diag'); if(old) old.remove();
                           var d=document.createElement('div'); d.id='__shell_diag';
-                          d.style.cssText='position:fixed;z-index:2147483647;left:6px;bottom:6px;font:11px/1.45 monospace;background:rgba(0,0,0,.8);color:#7CFC00;padding:4px 7px;border-radius:6px;pointer-events:none;max-width:96vw;white-space:pre';
-                          var coarse=false; try{coarse=window.matchMedia('(hover: none) and (pointer: coarse)').matches;}catch(e){}
-                          var psw=''; try{psw=getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-width');}catch(e){}
-                          var vs=(window.visualViewport?window.visualViewport.scale:1);
-                          d.textContent='shell1.0.13 iw='+window.innerWidth+' ih='+window.innerHeight+' dpr='+(window.devicePixelRatio||1)+' vs='+vs+' coarse='+coarse+' psw='+psw;
-                          (document.body||document.documentElement).appendChild(d);
+                          d.style.cssText='position:fixed;z-index:2147483647;left:6px;top:6px;font:11px/1.45 monospace;background:rgba(0,0,0,.85);color:#7CFC00;padding:4px 7px;border-radius:6px;pointer-events:none;max-width:96vw;white-space:pre-wrap';
+                          d.textContent=msg;
+                          (document.body||de).appendChild(d);
                         }catch(e){}
-                      }
-                      paint(); setTimeout(paint,900); setTimeout(paint,2500);
-                    })();
-                    """.trimIndent(),
-                    null
-                )
+                        return msg;
+                      }catch(e){ return 'diag-err'; }
+                    })()
+                    """.trimIndent()
+                ) { raw ->
+                    val msg = raw?.removeSurrounding("\"")?.replace("\\\"", "\"")
+                    if (!msg.isNullOrBlank()) {
+                        android.widget.Toast.makeText(this@MainActivity, msg, android.widget.Toast.LENGTH_LONG).show()
+                    }
+                }
             }
 
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
