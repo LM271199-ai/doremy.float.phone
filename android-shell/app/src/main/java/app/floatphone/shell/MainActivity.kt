@@ -287,10 +287,13 @@ class MainActivity : AppCompatActivity() {
             databaseEnabled = true
             mediaPlaybackRequiresUserGesture = false
             allowFileAccess = false
-            // 让 WebView 按网页的 viewport meta（width=device-width）布局并自适应屏幕宽度。
-            // 不设这两项时 WebView 会退回桌面 980px 宽度、按 100% 渲染，移动端页面会显得过大。
+            // 让 WebView 按网页的 viewport meta（width=device-width）布局。
+            // useWideViewPort=true 才会解析 meta viewport；overview 关掉，避免 WebView
+            // 自作主张把内容缩放去「填满宽度」导致整体被放大（与 Chrome 不一致）。
             useWideViewPort = true
-            loadWithOverviewMode = true
+            loadWithOverviewMode = false
+            // 固定文字缩放 100%，不受系统字体大小影响（Chrome 默认也不会整体放大）。
+            textZoom = 100
             userAgentString = "$userAgentString FloatShell/$VERSION"
         }
         CookieManager.getInstance().setAcceptCookie(true)
@@ -308,6 +311,32 @@ class MainActivity : AppCompatActivity() {
         ShellBus.webView = webView
 
         webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView, url: String) {
+                super.onPageFinished(view, url)
+                // 临时诊断条：显示 WebView 的视口/缩放信息，用于定位「整体偏大」。
+                // 定位完成后会移除。
+                view.evaluateJavascript(
+                    """
+                    (function(){
+                      function paint(){
+                        try{
+                          var old=document.getElementById('__shell_diag'); if(old) old.remove();
+                          var d=document.createElement('div'); d.id='__shell_diag';
+                          d.style.cssText='position:fixed;z-index:2147483647;left:6px;bottom:6px;font:11px/1.45 monospace;background:rgba(0,0,0,.8);color:#7CFC00;padding:4px 7px;border-radius:6px;pointer-events:none;max-width:96vw;white-space:pre';
+                          var coarse=false; try{coarse=window.matchMedia('(hover: none) and (pointer: coarse)').matches;}catch(e){}
+                          var psw=''; try{psw=getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-width');}catch(e){}
+                          var vs=(window.visualViewport?window.visualViewport.scale:1);
+                          d.textContent='shell1.0.13 iw='+window.innerWidth+' ih='+window.innerHeight+' dpr='+(window.devicePixelRatio||1)+' vs='+vs+' coarse='+coarse+' psw='+psw;
+                          (document.body||document.documentElement).appendChild(d);
+                        }catch(e){}
+                      }
+                      paint(); setTimeout(paint,900); setTimeout(paint,2500);
+                    })();
+                    """.trimIndent(),
+                    null
+                )
+            }
+
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url
                 val scheme = url.scheme ?: return false
