@@ -287,6 +287,10 @@ class MainActivity : AppCompatActivity() {
             databaseEnabled = true
             mediaPlaybackRequiresUserGesture = false
             allowFileAccess = false
+            // 让 WebView 按网页的 viewport meta（width=device-width）布局并自适应屏幕宽度。
+            // 不设这两项时 WebView 会退回桌面 980px 宽度、按 100% 渲染，移动端页面会显得过大。
+            useWideViewPort = true
+            loadWithOverviewMode = true
             userAgentString = "$userAgentString FloatShell/$VERSION"
         }
         CookieManager.getInstance().setAcceptCookie(true)
