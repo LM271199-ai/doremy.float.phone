@@ -42,8 +42,8 @@ android {
         // 1.0.28：release 关闭 WebView 调试，并禁用 Android 自动备份，使用应用内显式导出。
         // 1.0.29：AndroidShell / PhoneWidget 使用顶层 nonce 桥，第三方 iframe 无法调用原生能力。
         // 1.0.30：同步上游 2413e70（专注/后台增强等原生能力），保留全屏与去角标定制。
-        versionCode 29
-        versionName "1.0.30"
+        versionCode 30
+        versionName "1.0.31"
         buildConfigField "String", "SITE_URL", "\"${siteUrl}\""
     }
 
