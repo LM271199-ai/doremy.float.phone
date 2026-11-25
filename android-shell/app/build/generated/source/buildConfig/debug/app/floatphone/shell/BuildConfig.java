@@ -7,8 +7,8 @@ public final class BuildConfig {
   public static final boolean DEBUG = Boolean.parseBoolean("true");
   public static final String APPLICATION_ID = "app.floatphone.shell";
   public static final String BUILD_TYPE = "debug";
-  public static final int VERSION_CODE = 16;
-  public static final String VERSION_NAME = "1.0.17";
+  public static final int VERSION_CODE = 17;
+  public static final String VERSION_NAME = "1.0.18";
   // Field from default config.
   public static final String SITE_URL = "https://doremy-float-phone-xmb0.netlify.app";
 }

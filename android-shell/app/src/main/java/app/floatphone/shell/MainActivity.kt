@@ -24,12 +24,14 @@ import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.ByteArrayInputStream
 import android.webkit.CookieManager
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -377,6 +379,16 @@ a[href*="netlify.com"]{display:none !important;}
                     """.trimIndent(),
                     null
                 )
+            }
+
+            override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+                val u = request.url.toString()
+                // 屏蔽 Netlify HUD 脚本：它在运行时注入「Powered by Netlify」角标（shadow DOM，CSS 摸不到），
+                // 直接让该脚本请求返回空内容，从源头去掉角标。
+                if (u.contains("/.netlify/scripts/hud")) {
+                    return WebResourceResponse("text/javascript", "utf-8", ByteArrayInputStream(ByteArray(0)))
+                }
+                return super.shouldInterceptRequest(view, request)
             }
 
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
