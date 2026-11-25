@@ -336,6 +336,7 @@ html,body{overflow:hidden !important;width:100% !important;height:100lvh !import
 .phone-shell-wrap .phone-frame,.splash-shell-wrap .phone-frame{padding:0 !important;background:transparent !important;box-shadow:none !important;width:var(--phone-screen-width) !important;}
 .phone-shell-wrap .phone-frame::before,.phone-shell-wrap .phone-frame::after,.splash-shell-wrap .phone-frame::before,.splash-shell-wrap .phone-frame::after{display:none !important;}
 .phone-shell{width:var(--phone-screen-width) !important;height:var(--phone-screen-height) !important;border-radius:0 !important;}
+a[href*="netlify.com"]{display:none !important;}
 `;
                           (document.head||de).appendChild(st);
                         }
@@ -348,8 +349,29 @@ html,body{overflow:hidden !important;width:100% !important;height:100lvh !import
                             if (z < 0.92) de.style.zoom=String(Math.floor(z*1000)/1000); else de.style.zoom='';
                           }catch(e){}
                         }
+                        function hideBadge(){
+                          try{
+                            var nodes=document.querySelectorAll('a,span,div,iframe');
+                            for(var i=0;i<nodes.length;i++){
+                              var el=nodes[i]; var hit=false;
+                              if(el.tagName==='IFRAME'){ try{hit=/netlify/i.test(el.src||'');}catch(e){} }
+                              else if(el.children.length<=3 && (el.textContent||'').trim().length<=40 && /powered\s*by\s*netlify/i.test((el.textContent||'').trim())) hit=true;
+                              else if(el.tagName==='A' && /netlify\.com/i.test(el.getAttribute('href')||'')) hit=true;
+                              if(hit){
+                                var target=el, t=el;
+                                for(var k=0;k<5 && t && t!==document.body;k++){
+                                  var cs=window.getComputedStyle(t);
+                                  if(cs.position==='fixed'||cs.position==='absolute'||t.tagName==='A'){ target=t; break; }
+                                  t=t.parentElement;
+                                }
+                                target.style.setProperty('display','none','important');
+                              }
+                            }
+                          }catch(e){}
+                        }
                         fit(); setTimeout(fit,700);
                         window.addEventListener('resize', function(){ setTimeout(fit,250); });
+                        hideBadge(); setTimeout(hideBadge,600); setTimeout(hideBadge,1500); setTimeout(hideBadge,3000); setTimeout(hideBadge,6000);
                       }catch(e){}
                     })();
                     """.trimIndent(),
