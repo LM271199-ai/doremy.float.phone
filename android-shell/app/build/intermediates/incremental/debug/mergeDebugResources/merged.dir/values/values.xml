@@ -307,6 +307,7 @@
     <string name="call_notification_incoming_text">Incoming call</string>
     <string name="call_notification_ongoing_text">Ongoing call</string>
     <string name="call_notification_screening_text">Screening an incoming call</string>
+    <string name="focus_widget_desc">专注倒计时：动态显示当前专注剩余时间、任务与 TA 的状态。</string>
     <string name="phone_widget_desc">角色留在桌面上的话</string>
     <string name="search_menu_title">Search</string>
     <string name="status_bar_notification_info_overflow">999+</string>

@@ -1,15 +1,33 @@
 R_DEF: Internal format may change without notice
 local
 drawable appicon
+drawable focus_widget_bg
+drawable focus_widget_bg_r16
+drawable focus_widget_bg_r18
+drawable focus_widget_bg_r24
+drawable focus_widget_bg_r8
+drawable focus_widget_progress
 drawable ic_stat
+id focus_widget_bg
+id focus_widget_chrono
+id focus_widget_paused
+id focus_widget_progress
+id focus_widget_root
+id focus_widget_ta
+id focus_widget_task
+id focus_widget_title
 id widget_image
+layout focus_widget
 layout phone_widget
 string accessibility_service_description
 string accessibility_service_summary
 string app_name
+string focus_widget_desc
 string phone_widget_desc
 style Theme.FloatShell
 xml call_control_service
+xml focus_device_admin
+xml focus_widget_info
 xml network_security_config
 xml phone_widget_info
 xml shared_video_paths

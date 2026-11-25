@@ -618,6 +618,12 @@ drawable btn_radio_off_mtrl
 drawable btn_radio_off_to_on_mtrl_animation
 drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
+drawable focus_widget_bg
+drawable focus_widget_bg_r16
+drawable focus_widget_bg_r18
+drawable focus_widget_bg_r24
+drawable focus_widget_bg_r8
+drawable focus_widget_progress
 drawable ic_call_answer
 drawable ic_call_answer_low
 drawable ic_call_answer_video
@@ -725,6 +731,14 @@ id edit_text_id
 id end
 id expand_activities_button
 id expanded_menu
+id focus_widget_bg
+id focus_widget_chrono
+id focus_widget_paused
+id focus_widget_progress
+id focus_widget_root
+id focus_widget_ta
+id focus_widget_task
+id focus_widget_title
 id forever
 id fragment_container_view_tag
 id group_divider
@@ -863,6 +877,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout custom_dialog
+layout focus_widget
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout notification_action
@@ -914,6 +929,7 @@ string call_notification_hang_up_action
 string call_notification_incoming_text
 string call_notification_ongoing_text
 string call_notification_screening_text
+string focus_widget_desc
 string phone_widget_desc
 string search_menu_title
 string status_bar_notification_info_overflow
@@ -1316,6 +1332,8 @@ styleable View android_theme android_focusable paddingEnd paddingStart theme
 styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 styleable ViewStubCompat android_id android_layout android_inflatedId
 xml call_control_service
+xml focus_device_admin
+xml focus_widget_info
 xml network_security_config
 xml phone_widget_info
 xml shared_video_paths
