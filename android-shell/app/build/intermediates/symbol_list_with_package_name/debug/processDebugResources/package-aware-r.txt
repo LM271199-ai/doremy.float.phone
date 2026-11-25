@@ -1316,4 +1316,6 @@ styleable View android_theme android_focusable paddingEnd paddingStart theme
 styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 styleable ViewStubCompat android_id android_layout android_inflatedId
 xml call_control_service
+xml network_security_config
 xml phone_widget_info
+xml shared_video_paths

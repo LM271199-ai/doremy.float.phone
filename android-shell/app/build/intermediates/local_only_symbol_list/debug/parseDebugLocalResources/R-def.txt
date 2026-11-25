@@ -10,4 +10,6 @@ string app_name
 string phone_widget_desc
 style Theme.FloatShell
 xml call_control_service
+xml network_security_config
 xml phone_widget_info
+xml shared_video_paths
